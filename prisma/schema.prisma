@@ -11,3 +11,110 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum MicroCategory {
+  VITAMINS
+  MINERALS
+  FATS
+}
+
+enum FoodCategory {
+  DAIRY
+  EGGS
+  FISH_SEAFOOD @map("Fish & Seafood")
+  FRUITS
+  GRAINS
+  LEGUMES
+  NUTS_SEEDS
+  POULTRY
+  RED_MEAT
+  VEGETABLES
+}
+
+model Micro {
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique
+  unit               String
+  limit              Int?
+  goal               Int
+  benefits           String[]
+  warnings           String[]
+  category           MicroCategory
+  foodNutrients      FoodNutrient[]
+  foodEntryNutrients FoodEntryNutrient[]
+}
+
+model Food {
+  id        Int            @id @default(autoincrement())
+  name      String         @unique
+  category  FoodCategory
+  serving   Int
+  unit      String
+  calories  Int
+  protein   Int
+  carbs     Int
+  fat       Int
+  fiber     Int
+  benefits  String[]
+  warnings  String[]
+  stocked   Boolean        @default(false)
+  nutrients FoodNutrient[]
+  entries   FoodEntry[]
+}
+
+model FoodNutrient {
+  id      Int   @id @default(autoincrement())
+  foodId  Int
+  microId Int
+  amount  Float
+
+  food  Food  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  micro Micro @relation(fields: [microId], references: [id], onDelete: Cascade)
+
+  @@unique([foodId, microId])
+}
+
+model FoodEntry {
+  id       Int      @id @default(autoincrement())
+  foodId   Int?
+  servings Float    @default(1)
+  loggedAt DateTime @default(now())
+  calories Float
+  protein  Float
+  carbs    Float
+  fat      Float
+  fiber    Float
+
+  food               Food?               @relation(fields: [foodId], references: [id], onDelete: SetNull)
+  foodEntryNutrients FoodEntryNutrient[]
+}
+
+model FoodEntryNutrient {
+  id          Int   @id @default(autoincrement())
+  foodEntryId Int
+  microId     Int
+  amount      Float
+
+  foodEntry FoodEntry @relation(fields: [foodEntryId], references: [id], onDelete: Cascade)
+  micro     Micro     @relation(fields: [microId], references: [id], onDelete: Cascade)
+
+  @@unique([foodEntryId, microId])
+}
+
+model WeightEntry {
+  id     Int      @id @default(autoincrement())
+  date   DateTime @default(now())
+  weight Float
+  unit   String   @default("lbs")
+}
+
+model MacroGoals {
+  id          Int     @id @default(autoincrement())
+  singleton   Boolean @unique @default(true)
+  weightGoal  Float
+  calorieGoal Int
+  proteinGoal Int
+  carbGoal    Int
+  fatGoal     Int
+  fiberGoal   Int
+}
