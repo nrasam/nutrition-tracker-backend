@@ -16,6 +16,7 @@ enum MicroCategory {
   VITAMINS
   MINERALS
   FATS
+  OTHER
 }
 
 enum FoodCategory {
@@ -29,6 +30,7 @@ enum FoodCategory {
   POULTRY
   RED_MEAT
   VEGETABLES
+  DRINKS
 }
 
 model Micro {
