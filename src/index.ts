@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 
 import foodsRouter from "./routes/foods";
 import entriesRouter from "./routes/entries";
@@ -7,6 +8,7 @@ import microsRouter from "./routes/micros";
 import weightRouter from "./routes/weight";
 
 const app = express();
+app.use(cors()); // Allows frontend to call the backend
 app.use(express.json()); // Allows JSON parsing
 app.use("/api/foods", foodsRouter);
 app.use("/api/entries", entriesRouter);
