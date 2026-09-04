@@ -3,11 +3,15 @@ import express from "express";
 
 import foodsRouter from "./routes/foods";
 import entriesRouter from "./routes/entries";
+import microsRouter from "./routes/micros";
+import weightRouter from "./routes/weight";
 
 const app = express();
-app.use(express.json());  // Allows JSON parsing
+app.use(express.json()); // Allows JSON parsing
 app.use("/api/foods", foodsRouter);
 app.use("/api/entries", entriesRouter);
+app.use("/api/micros", microsRouter);
+app.use("/api/weight{s}", weightRouter);
 
 const PORT = process.env.PORT ?? 3001;
 
