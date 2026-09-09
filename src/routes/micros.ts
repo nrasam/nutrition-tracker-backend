@@ -7,7 +7,7 @@ router.get("/", async (req, res) => {
   try {
     const micros = await prisma.micro.findMany({
       include: {
-        foodNutrients: true,
+        foodNutrients: { include: { food: true } },
       },
     });
 
