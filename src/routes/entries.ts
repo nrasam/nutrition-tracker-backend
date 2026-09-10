@@ -5,13 +5,24 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
+    if (!req.query.start || !req.query.end) {
+      return res
+        .status(400)
+        .json({ error: "start and end times are required" });
+    }
+
+    const start = new Date(req.query.start as string);
+    const end = new Date(req.query.end as string);
+
     const entries = await prisma.foodEntry.findMany({
+      where: { loggedAt: { gte: start, lt: end } },
       include: {
         foodEntryNutrients: {
           include: {
             micro: { select: { id: true, name: true, unit: true, goal: true } },
           },
         },
+        food: true,
       },
     });
 
@@ -63,7 +74,7 @@ router.post("/", async (req, res) => {
           })),
         },
       },
-      include: { foodEntryNutrients: { include: { micro: true } } },
+      include: { foodEntryNutrients: { include: { micro: true } }, food: true },
     });
 
     res.status(201).json(entry);
@@ -94,6 +105,27 @@ router.delete("/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete food entry" });
+  }
+});
+
+router.delete("/", async (req, res) => {
+  try {
+    if (!req.query.start || !req.query.end) {
+      return res
+        .status(400)
+        .json({ error: "start and end times are required" });
+    }
+
+    const start = new Date(req.query.start as string);
+    const end = new Date(req.query.end as string);
+
+    await prisma.foodEntry.deleteMany({
+      where: { loggedAt: { gte: start, lt: end } },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to clear entries" });
   }
 });
 
