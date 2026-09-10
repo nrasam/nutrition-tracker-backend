@@ -3,45 +3,31 @@ import prisma from "../lib/prisma";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const foods = await prisma.food.findMany({
-      include: {
-        nutrients: {
-          select: {
-            amount: true,
-            micro: { select: { id: true, name: true, unit: true, goal: true } },
+router
+  .route("/")
+  .get(async (req, res) => {
+    try {
+      const foods = await prisma.food.findMany({
+        include: {
+          nutrients: {
+            select: {
+              amount: true,
+              micro: {
+                select: { id: true, name: true, unit: true, goal: true },
+              },
+            },
           },
         },
-      },
-    });
-    res.json(foods);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch foods" });
-  }
-});
-
-router.post("/", async (req, res) => {
-  try {
-    const {
-      name,
-      category,
-      serving,
-      unit,
-      calories,
-      protein,
-      carbs,
-      fat,
-      fiber,
-      benefits,
-      warnings,
-      stocked,
-      nutrients, // expected shape: [{ microId, amount }, ...]
-    } = req.body;
-
-    const food = await prisma.food.create({
-      data: {
+      });
+      res.json(foods);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch foods" });
+    }
+  })
+  .post(async (req, res) => {
+    try {
+      const {
         name,
         category,
         serving,
@@ -54,19 +40,36 @@ router.post("/", async (req, res) => {
         benefits,
         warnings,
         stocked,
-        nutrients: {
-          create: nutrients,
-        },
-      },
-      include: { nutrients: { include: { micro: true } } },
-    });
+        nutrients, // expected shape: [{ microId, amount }, ...]
+      } = req.body;
 
-    res.status(201).json(food);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to create food" });
-  }
-});
+      const food = await prisma.food.create({
+        data: {
+          name,
+          category,
+          serving,
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          fiber,
+          benefits,
+          warnings,
+          stocked,
+          nutrients: {
+            create: nutrients,
+          },
+        },
+        include: { nutrients: { include: { micro: true } } },
+      });
+
+      res.status(201).json(food);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to create food" });
+    }
+  });
 
 router.delete("/:id", async (req, res) => {
   try {
