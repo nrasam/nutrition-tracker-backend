@@ -6,6 +6,7 @@ import foodsRouter from "./routes/foods";
 import entriesRouter from "./routes/entries";
 import microsRouter from "./routes/micros";
 import weightRouter from "./routes/weight";
+import goalsRouter from "./routes/goals";
 
 const app = express();
 app.use(cors()); // Allows frontend to call the backend
@@ -14,6 +15,7 @@ app.use("/api/foods", foodsRouter);
 app.use("/api/entries", entriesRouter);
 app.use("/api/micros", microsRouter);
 app.use("/api/weight{s}", weightRouter);
+app.use("/api/goals", goalsRouter);
 
 const PORT = process.env.PORT ?? 3001;
 
