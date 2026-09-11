@@ -11,6 +11,7 @@ router
         include: {
           nutrients: {
             select: {
+              microId: true,
               amount: true,
               micro: {
                 select: { id: true, name: true, unit: true, goal: true },
@@ -91,6 +92,59 @@ router.delete("/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to delete food" });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const {
+      name,
+      category,
+      serving,
+      unit,
+      calories,
+      protein,
+      carbs,
+      fat,
+      fiber,
+      benefits,
+      warnings,
+      stocked,
+      nutrients,
+    } = req.body;
+
+    // Using a transaction here as this is a 2-step process and I want ensure prisma rollbacks any changes if anything fails
+    const food = await prisma.$transaction(async (tx) => {
+      // First delete all old nutrients associated with the food
+      await tx.foodNutrient.deleteMany({ where: { foodId: id } });
+
+      // 2nd update the food with the new info and create new nutrients
+      return tx.food.update({
+        where: { id },
+        data: {
+          name,
+          category,
+          serving,
+          unit,
+          calories,
+          protein,
+          carbs,
+          fat,
+          fiber,
+          benefits,
+          warnings,
+          stocked,
+          nutrients: { create: nutrients },
+        },
+        include: { nutrients: { include: { micro: true } } },
+      });
+    });
+
+    res.json(food);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update food" });
   }
 });
 
