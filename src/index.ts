@@ -7,10 +7,13 @@ import entriesRouter from "./routes/entries";
 import microsRouter from "./routes/micros";
 import weightRouter from "./routes/weight";
 import goalsRouter from "./routes/goals";
-import { error } from "node:console";
 
 const app = express();
-app.use(cors()); // Allows frontend to call the backend
+app.use(
+  cors({
+    origin: "https://noelsnutritiontracker.netlify.app",
+  }),
+); // Allows frontend to call the backend
 app.use(express.json()); // Allows JSON parsing
 app.use(adminGuard); // Makes sure an admin password is needed for non-GET requests
 app.use("/api/foods", foodsRouter);
