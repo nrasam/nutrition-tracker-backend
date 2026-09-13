@@ -32,6 +32,7 @@ enum FoodCategory {
   VEGETABLES
   DRINKS
   SUPPLEMENT
+  SWEETS
 }
 
 model Micro {
