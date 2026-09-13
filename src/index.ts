@@ -11,7 +11,7 @@ import goalsRouter from "./routes/goals";
 const app = express();
 app.use(
   cors({
-    origin: "https://noelsnutritiontracker.netlify.app",
+    // origin: "https://noelsnutritiontracker.netlify.app",
   }),
 ); // Allows frontend to call the backend
 app.use(express.json()); // Allows JSON parsing
