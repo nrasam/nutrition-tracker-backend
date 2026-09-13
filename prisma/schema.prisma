@@ -33,6 +33,7 @@ enum FoodCategory {
   DRINKS
   SUPPLEMENT
   SWEETS
+  OILS
 }
 
 model Micro {
